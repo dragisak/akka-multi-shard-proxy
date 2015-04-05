@@ -18,31 +18,41 @@ object Client extends App {
   val cluster = Cluster(system)
 
 
-  val idExtractor: ShardRegion.IdExtractor = {
-    case msg: Int => (msg.toString, msg)
+
+  val idExtractor1: ShardRegion.IdExtractor = {
+    case msg@("W1", i: Int) => (i.toString, msg)
   }
 
-  val shardResolver: ShardRegion.ShardResolver = {
-    case msg: Int => (msg % 3).toString
+  val shardResolver1: ShardRegion.ShardResolver = {
+    case  msg@("W1", i: Int) => (i % 3).toString
+  }
+
+
+  val idExtractor2: ShardRegion.IdExtractor = {
+    case msg@("W2", i: Int) => (i.toString, msg)
+  }
+
+  val shardResolver2: ShardRegion.ShardResolver = {
+    case  msg@("W2", i: Int) => (i % 3).toString
   }
 
 
   val w1 = ClusterSharding(system).start(
     typeName = "W1",
     entryProps = None,
-    idExtractor = idExtractor ,
-    shardResolver = shardResolver
+    idExtractor = idExtractor1 ,
+    shardResolver = shardResolver1
   )
 
   val w2 = ClusterSharding(system).start(
     typeName = "W2",
     entryProps = None,
-    idExtractor = idExtractor ,
-    shardResolver = shardResolver
+    idExtractor = idExtractor2 ,
+    shardResolver = shardResolver2
   )
 
-  system.scheduler.schedule(5 seconds, 2 seconds)( w1 ! Random.nextInt())
-  system.scheduler.schedule(6 seconds, 2 seconds)( w2 ! Random.nextInt())
+  system.scheduler.schedule(5 seconds, 2 seconds)( w1 ! ("W1", Random.nextInt()))
+  system.scheduler.schedule(6 seconds, 2 seconds)( w2 ! ("W2", Random.nextInt()))
 
 
   sys.addShutdownHook {

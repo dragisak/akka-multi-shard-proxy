@@ -18,11 +18,11 @@ object W1 extends App {
 
 
    val idExtractor: ShardRegion.IdExtractor = {
-     case msg: Int => (msg.toString, msg)
+     case msg@("W1", i: Int) => (i.toString, msg)
    }
 
    val shardResolver: ShardRegion.ShardResolver = {
-     case msg: Int => (msg % 3).toString
+     case  msg@("W1", i: Int) => (i % 3).toString
    }
 
 

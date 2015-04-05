@@ -17,14 +17,13 @@ object W2 extends App {
    val cluster = Cluster(system)
 
 
-   val idExtractor: ShardRegion.IdExtractor = {
-     case msg: Int => (msg.toString, msg)
-   }
+  val idExtractor: ShardRegion.IdExtractor = {
+    case msg@("W2", i: Int) => (i.toString, msg)
+  }
 
-   val shardResolver: ShardRegion.ShardResolver = {
-     case msg: Int => (msg % 3).toString
-   }
-
+  val shardResolver: ShardRegion.ShardResolver = {
+    case  msg@("W2", i: Int) => (i % 3).toString
+  }
 
    ClusterSharding(system).start(
      typeName = "W2",
