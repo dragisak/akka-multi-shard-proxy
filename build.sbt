@@ -1,10 +1,10 @@
 name := "multi-proxy-root"
 
 
-lazy val root = project.in(file(".")).aggregate(client, w1, w2)
+lazy val root = project.in(file(".")).aggregate(client, one, two)
 
-lazy val w1 = project.in(file("w1"))
+lazy val one = project.in(file("one"))
 
-lazy val w2 = project.in(file("w2"))
+lazy val two = project.in(file("two"))
 
 lazy val client = project.in(file("client"))
