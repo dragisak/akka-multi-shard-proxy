@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-object W1 extends App {
+object One extends App {
 
    val system = ActorSystem("application")
 
@@ -18,17 +18,17 @@ object W1 extends App {
 
 
    val idExtractor: ShardRegion.IdExtractor = {
-     case msg@("W1", i: Int) => (i.toString, msg)
+     case i: Int => (i.toString, i)
    }
 
    val shardResolver: ShardRegion.ShardResolver = {
-     case  msg@("W1", i: Int) => (i % 3).toString
+     case  i: Int => (i % 3).toString
    }
 
 
    ClusterSharding(system).start(
-     typeName = "W1",
-     entryProps = Some(Props[W1Actor]),
+     typeName = "ONE",
+     entryProps = Some(Props[ActorOne]),
      idExtractor = idExtractor ,
      shardResolver = shardResolver
    )
